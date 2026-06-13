@@ -17,3 +17,10 @@ export function formatFecha(fecha: string): string {
     year: "numeric",
   });
 }
+
+// Hora (HH:mm) a partir de un ISO timestamp.
+export function formatHora(iso: string): string {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+}
