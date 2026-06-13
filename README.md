@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💰 CashCoach
 
-## Getting Started
+Coach financiero con IA para jóvenes. Registra tus gastos, deja que la IA los clasifique,
+analiza tus hábitos, detecta fugas de dinero, genera retos de ahorro y simula metas.
 
-First, run the development server:
+MVP construido para hackathon.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Stack
+- **Next.js 14** (App Router, TypeScript)
+- **shadcn/ui** + Tailwind CSS + lucide-react
+- **Supabase** (PostgreSQL)
+- **DeepSeek** API (`deepseek-chat`) — con fallback a mock si no hay API key
+- UI en español · sin autenticación (usuario demo)
+
+## Arquitectura (3 capas)
+```
+app/api/ (route)  →  services/ (lógica)  →  providers/ (Supabase / DeepSeek)
+                            ↕
+                     domain/types.ts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Puesta en marcha
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Instala dependencias**
+   ```bash
+   npm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Configura la base de datos**
+   - En tu proyecto de Supabase → SQL Editor, ejecuta [`supabase-schema.sql`](./supabase-schema.sql).
 
-## Learn More
+3. **Variables de entorno** — crea `.env.local` (puedes partir de `.env.example`):
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxx.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...      # publishable key (pública)
+   DEEPSEEK_API_KEY=sk-...                                # opcional; sin ella se usa un mock
+   ```
+   > ⚠️ Nunca pongas la *secret key* (`sb_secret_...`) en una variable `NEXT_PUBLIC_*`.
 
-To learn more about Next.js, take a look at the following resources:
+4. **Levanta la app**
+   ```bash
+   npm run dev
+   ```
+   Abre http://localhost:3000
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Funcionalidades
+- **Dashboard** (`/`) — resumen del mes, gráfica por categoría, reto de la semana (IA) y accesos rápidos.
+- **Gastos** (`/gastos`) — registrar y listar gastos; categoría manual o automática (IA).
+- **Chat** (`/chat`) — coach financiero con contexto de tus gastos.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Estructura
+```
+src/
+├── app/          # páginas y API routes
+├── domain/       # tipos e interfaces
+├── services/     # lógica de negocio
+├── providers/    # Supabase y DeepSeek
+├── components/   # componentes React (+ ui/ de shadcn)
+└── lib/          # utilidades (formato, categorías, nav)
+```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+El progreso de cada etapa de desarrollo está documentado en [`chamba-de-claudio/`](./chamba-de-claudio).

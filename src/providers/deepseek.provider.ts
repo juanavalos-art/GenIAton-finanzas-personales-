@@ -55,3 +55,32 @@ function mockCompletion(messages: LLMMessage[]): string {
   }
   return "¡Hola! Soy tu CashCoach. 💰 Cuéntame sobre tus gastos o pregúntame cómo ahorrar para una meta, y te ayudo con un plan concreto y sin sermones.";
 }
+
+// Clasifica la descripción de un gasto en una categoría (texto crudo del modelo).
+// El service se encarga de normalizar el resultado a una CategoriaGasto válida.
+export async function clasificarTexto(descripcion: string): Promise<string> {
+  if (!process.env.DEEPSEEK_API_KEY) return mockClasificar(descripcion);
+
+  const messages: LLMMessage[] = [
+    {
+      role: "system",
+      content:
+        "Eres un clasificador de gastos. Categorías válidas: comida, transporte, entretenimiento, servicios, compras, salud, educacion, otros. Responde SOLO con una palabra (la categoría exacta, en minúsculas, sin acentos, sin explicación).",
+    },
+    { role: "user", content: `Clasifica este gasto: "${descripcion}"` },
+  ];
+  return chatCompletion(messages);
+}
+
+// Mock de clasificación por palabras clave (cuando no hay API key).
+function mockClasificar(descripcion: string): string {
+  const t = descripcion.toLowerCase();
+  if (/(café|cafe|starbucks|restaurante|comida|taco|pizza|super|mercado|desayuno|cena)/.test(t)) return "comida";
+  if (/(uber|taxi|gasolina|metro|camión|camion|transporte|pasaje|didi)/.test(t)) return "transporte";
+  if (/(cine|netflix|spotify|juego|bar|fiesta|concierto|disney)/.test(t)) return "entretenimiento";
+  if (/(luz|agua|internet|renta|teléfono|telefono|gas|servicio|cfe)/.test(t)) return "servicios";
+  if (/(ropa|zapato|amazon|tienda|compra|mercadolibre)/.test(t)) return "compras";
+  if (/(doctor|medicina|farmacia|gym|gimnasio|salud|dentista)/.test(t)) return "salud";
+  if (/(curso|libro|escuela|universidad|colegiatura|educa|udemy)/.test(t)) return "educacion";
+  return "otros";
+}

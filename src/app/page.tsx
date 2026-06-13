@@ -6,6 +6,7 @@ import { Receipt, MessageSquare, ChevronRight } from "lucide-react";
 import { ResumenFinanciero } from "@/domain/types";
 import { ResumenCards } from "@/components/ResumenCards";
 import { CategoriaBarChart } from "@/components/CategoriaBarChart";
+import { RetoSemana } from "@/components/RetoSemana";
 import { Card } from "@/components/ui/card";
 
 export default function DashboardPage() {
@@ -47,6 +48,7 @@ export default function DashboardPage() {
       {resumen && (
         <>
           <ResumenCards resumen={resumen} />
+          <RetoSemana enabled={resumen.gastosPorCategoria.length > 0} />
           <Card className="p-4">
             <h2 className="mb-4 text-lg font-semibold">📊 Gasto por categoría</h2>
             <CategoriaBarChart data={resumen.gastosPorCategoria} />
